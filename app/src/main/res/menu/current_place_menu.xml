@@ -5,4 +5,8 @@
         android:id="@+id/option_get_place"
         android:title="@string/option_get_place"
         app:showAsAction="always"/>
+    <item
+        android:id="@+id/notesMenu"
+        app:showAsAction="always"/>
+
 </menu>

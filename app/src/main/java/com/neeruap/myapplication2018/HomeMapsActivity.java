@@ -216,7 +216,7 @@ public class HomeMapsActivity extends FragmentActivity implements OnMapReadyCall
         Log.i(TAG, "From the notes fragment" + notesSting);
 
         Toast.makeText(this, notesSting[1].toString(),Toast.LENGTH_SHORT).show();
-       
+
         getSupportFragmentManager().beginTransaction().remove(notesFrag).commit();
     }
 
@@ -391,6 +391,8 @@ public class HomeMapsActivity extends FragmentActivity implements OnMapReadyCall
         if (item.getItemId() == R.id.option_get_place) {
             showCurrentPlace();
         }
+
+
         return true;
     }
 

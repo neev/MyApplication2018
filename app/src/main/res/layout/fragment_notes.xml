@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="top"
                 android:layout_marginTop="@dimen/cardview_compat_inset_shadow"
-        android:elevation="@dimen/cardview_compat_inset_shadow"
+        android:elevation="8dp"
         app:cardBackgroundColor="#FCE4EC">
 
         <LinearLayout
