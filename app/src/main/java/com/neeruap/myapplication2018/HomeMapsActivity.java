@@ -25,6 +25,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -91,6 +93,9 @@ public class HomeMapsActivity extends FragmentActivity implements OnMapReadyCall
 
     private LatLng enteredPlace;
 
+    SupportMapFragment mapFragment;
+    NotesFragment notesFrag;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,7 +108,7 @@ public class HomeMapsActivity extends FragmentActivity implements OnMapReadyCall
 
         setContentView(R.layout.activity_home_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
@@ -131,9 +136,11 @@ public class HomeMapsActivity extends FragmentActivity implements OnMapReadyCall
                 /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                        .setAction("Action", null).show();*/
 
-                NotesFragment notesFrag = new NotesFragment();
-                notesFrag.setArguments(getIntent().getExtras());
-                getSupportFragmentManager().beginTransaction().add(R.id.frag_mapnotes_container, notesFrag).commit();
+
+
+                    notesFrag = new NotesFragment();
+                    notesFrag.setArguments(getIntent().getExtras());
+                    getSupportFragmentManager().beginTransaction().add(R.id.frag_mapnotes_container, notesFrag).commit();
 
             }
         });
@@ -204,10 +211,13 @@ public class HomeMapsActivity extends FragmentActivity implements OnMapReadyCall
 
     }
 
-    public void onFragmentInteraction(Uri uri){
+    public void onNotesFragmentInteraction(String [] notesSting){
 
-        Log.i(TAG, "From the notes fragment" + uri);
+        Log.i(TAG, "From the notes fragment" + notesSting);
 
+        Toast.makeText(this, notesSting[1].toString(),Toast.LENGTH_SHORT).show();
+       
+        getSupportFragmentManager().beginTransaction().remove(notesFrag).commit();
     }
 
 

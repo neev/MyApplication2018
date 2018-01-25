@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
 
 /**
@@ -28,6 +30,11 @@ public class NotesFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+
+    EditText notesEdittext;
+    Button notesButton;
+
+    String notesSting[];
 
     public NotesFragment() {
         // Required empty public constructor
@@ -64,15 +71,32 @@ public class NotesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_notes, container, false);
+        View view = inflater.inflate(R.layout.fragment_notes, container, false);
+        notesEdittext = (EditText) view.findViewById(R.id.notesEditbox);
+        notesButton =(Button) view.findViewById(R.id.notesDoneBtn);
+        notesButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view){
+                notesSting = new String [10];
+                notesSting[1] = notesEdittext.getText().toString();
+              mListener.onNotesFragmentInteraction(notesSting);
+
+            }
+        });
+
+
+        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
+            mListener.onNotesFragmentInteraction(notesSting);
+
+            }
     }
+
+
 
     @Override
     public void onAttach(Context context) {
@@ -103,6 +127,7 @@ public class NotesFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onNotesFragmentInteraction(String[] str);
+
     }
 }
