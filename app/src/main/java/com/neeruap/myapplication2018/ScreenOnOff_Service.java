@@ -1,12 +1,17 @@
 package com.neeruap.myapplication2018;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -15,6 +20,11 @@ public class ScreenOnOff_Service extends Service {
     BroadcastReceiver mReceiver=null;
     private static final String TAG = "ScreenOnOff_Service";
     private static final int FOREGROUND_NOTIFICATION_ID = 1;
+    private NotificationManager mNotificationManager;
+    /**
+     * The name of the channel for notifications.
+     */
+    private static final String CHANNEL_ID = "channel_01";
 
     @Override
     public void onCreate() {
@@ -28,7 +38,18 @@ public class ScreenOnOff_Service extends Service {
         mReceiver = new ScreenOnOff_Receiver();
         registerReceiver(mReceiver, filter);
 
+        mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
+        // Android O requires a Notification Channel.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.app_name);
+            // Create the channel for the notification
+            NotificationChannel mChannel =
+                    new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_DEFAULT);
+
+            // Set the Notification Channel for the Notification Manager.
+            mNotificationManager.createNotificationChannel(mChannel);
+        }
 
     }
 
@@ -45,7 +66,11 @@ public class ScreenOnOff_Service extends Service {
         try{
             // Get ON/OFF values sent from receiver ( AEScreenOnOffReceiver.java )
             screenOn = intent.getBooleanExtra("screen_state", false);
-            goForeground();
+
+                Log.i(TAG, "Starting foreground service");
+
+
+                startForeground(FOREGROUND_NOTIFICATION_ID, getNotification());
 
         }catch(Exception e){}
 
@@ -72,24 +97,34 @@ public class ScreenOnOff_Service extends Service {
     }
 
     /**
-     * Move service to the foreground, to avoid execution limits on background processes.
-     *
-     * Callers should call stopForeground(true) when background work is complete.
+     * Returns the {@link NotificationCompat} used as part of the foreground service.
      */
-    private void goForeground() {
-        Intent notificationIntent = new Intent(this, HomeMapsActivity.class);
+    private Notification getNotification() {
+        Intent intent = new Intent(this, ScreenOnOff_Service.class);
 
-        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, 0);
-        Notification n = new Notification.Builder(this)
-                .setContentTitle("Advertising device via Bluetooth")
-                .setContentText("This device is discoverable to others nearby.")
+        // The PendingIntent that leads to a call to onStartCommand() in this service.
+        PendingIntent servicePendingIntent = PendingIntent.getService(this, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .addAction(R.drawable.ic_media_play_dark, getString(R.string.option_get_place),
+                        servicePendingIntent)
+                .setContentText("screen state")
+
+                .setOngoing(true)
+                .setPriority(Notification.PRIORITY_HIGH)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentIntent(pendingIntent)
-                .build();
-        startForeground(FOREGROUND_NOTIFICATION_ID, n);
+
+                .setWhen(System.currentTimeMillis());
+
+        // Set the Channel ID for Android O.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            builder.setChannelId(CHANNEL_ID); // Channel ID
+        }
+
+        return builder.build();
     }
 
 
